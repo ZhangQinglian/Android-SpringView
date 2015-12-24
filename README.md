@@ -6,6 +6,11 @@
 1.拖动灰色部分可拖动下方视图，点击jump按钮可让下方视图自行滑动。
 
 #使用方法
+
+android studio:
+
+    > compile 'com.zql.android:springview:1.0'
+
 布局文件：
 ```xml
     <com.zql.android.springview.SpringView
