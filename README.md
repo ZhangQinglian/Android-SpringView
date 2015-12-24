@@ -1,7 +1,7 @@
 # Android-SpringView
 #Demo
 先看一下SpringView的效果图：
-![SpringView效果图](http://b.picphotos.baidu.com/album/s%3D900%3Bq%3D90/sign=7a2063ff12ce36d3a6048f300ac84bba/d53f8794a4c27d1ef38ea4e11cd5ad6eddc4386e.jpg)
+[SpringView效果图](http://b.picphotos.baidu.com/album/s%3D900%3Bq%3D90/sign=7a2063ff12ce36d3a6048f300ac84bba/d53f8794a4c27d1ef38ea4e11cd5ad6eddc4386e.jpg)
 
 1.拖动灰色部分可拖动下方视图，点击jump按钮可让下方视图自行滑动。
 
