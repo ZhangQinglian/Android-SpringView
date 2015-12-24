@@ -32,6 +32,11 @@ public class SpringView extends FrameLayout {
      * mMoveHolder的默认高度
      */
     private int mMoveHolderH = 80;
+
+    /**
+     * mMoveHolder的漂浮高度，默认0
+     */
+    private int mFloatHeight = 0;
     /**
      * mSpringViewHolder的最小上外边距
      */
@@ -45,7 +50,7 @@ public class SpringView extends FrameLayout {
      */
     private LayoutParams mFLP;
 
-    private boolean mIsTouchTop = false ;
+    private boolean mIsTouchTop = false;
     /**
      * 用于回调
      */
@@ -67,11 +72,11 @@ public class SpringView extends FrameLayout {
 
     public static final int PULL_UP_TOUCH_TOP = 0;
 
-    public static final int PULL_UP_TOUCH_BOTTOM = 1 ;
+    public static final int PULL_UP_TOUCH_BOTTOM = 1;
 
     private MyHandler mHandler = new MyHandler(this);
 
-    private static class MyHandler extends WeakHandler<SpringView>{
+    private static class MyHandler extends WeakHandler<SpringView> {
 
         public MyHandler(SpringView holder) {
             super(holder);
@@ -79,7 +84,7 @@ public class SpringView extends FrameLayout {
 
         @Override
         public void handleMessage(Message msg) {
-            switch (msg.what){
+            switch (msg.what) {
                 case PULL_UP_TOUCH_TOP:
                     getHolder().getOnSpringListener().touchTop();
                     break;
@@ -90,24 +95,34 @@ public class SpringView extends FrameLayout {
             }
         }
     }
+
     public SpringView(Context context, AttributeSet attrs) {
         super(context, attrs);
         mContext = context;
     }
 
+    public void setFloatHeight(int height) {
+        if (height < 0) return;
+        this.mFloatHeight = height;
+    }
+
     /**
      * 设置
+     *
      * @param listener
      */
-    public void setOnSpringListener(OnSpringListener listener){
+    public void setOnSpringListener(OnSpringListener listener) {
         this.mCallback = listener;
     }
-    public OnSpringListener getOnSpringListener(){
+
+    public OnSpringListener getOnSpringListener() {
         return mCallback;
     }
-    public boolean isTouchTop(){
-        return mIsTouchTop ;
+
+    public boolean isTouchTop() {
+        return mIsTouchTop;
     }
+
     @Override
     protected void onFinishInflate() {
         super.onFinishInflate();
@@ -121,12 +136,12 @@ public class SpringView extends FrameLayout {
         addView(mSpringViewHolder, 1, mFLP);
 
         //初始化mMoveHolder
-        if(getChildCount() == 4){
+        if (getChildCount() == 4) {
             mMoveHolder = getChildAt(2);
-            mMoveHolderH = mMoveHolder.getLayoutParams().height ;
-            Log.d("scott","mMoveHolderH = " + mMoveHolderH);
+            mMoveHolderH = mMoveHolder.getLayoutParams().height;
+            Log.d("scott", "mMoveHolderH = " + mMoveHolderH);
             removeViewAt(2);
-        }else{
+        } else {
             mMoveHolder = new View(mContext);
             mMoveHolder.setBackgroundColor(Color.GRAY);
         }
@@ -143,6 +158,7 @@ public class SpringView extends FrameLayout {
         mMoveHolder.setOnTouchListener(new OnTouchListener() {
             private float originY = 0;
             private float deltaY = 0;
+
             @Override
             public boolean onTouch(View v, MotionEvent event) {
                 switch (event.getAction()) {
@@ -165,14 +181,14 @@ public class SpringView extends FrameLayout {
                         }
                         break;
                     case MotionEvent.ACTION_UP:
-                        int top = mFLP.topMargin ;
-                        if(top == 0 || top == mMoveBottom){
+                        int top = mFLP.topMargin;
+                        if (top == 0 || top == mMoveBottom) {
                             return true;
                         }
-                        if(top < (mMoveTop + mMoveBottom)/2){
-                            doAnimation(250,top,0);
-                        }else{
-                            doAnimation(250,top,mMoveBottom);
+                        if (top < (mMoveTop + mMoveBottom) / 2) {
+                            doAnimation(250, top, 0);
+                        } else {
+                            doAnimation(250, top, mMoveBottom);
                         }
                         break;
                 }
@@ -181,18 +197,18 @@ public class SpringView extends FrameLayout {
         });
     }
 
-    public void jumpUp(){
-        doAnimation(250,mMoveBottom,mMoveTop);
+    public void jumpUp() {
+        doAnimation(250, mMoveBottom, mMoveTop);
     }
 
-    public void jumpDown(){
-        doAnimation(250,mMoveTop,mMoveBottom);
+    public void jumpDown() {
+        doAnimation(250, mMoveTop, mMoveBottom);
     }
 
     @TargetApi(Build.VERSION_CODES.HONEYCOMB)
-    private void doAnimation(int during, int start, int end){
-        if(Build.VERSION.SDK_INT>=Build.VERSION_CODES.HONEYCOMB){
-            ValueAnimator animator = ValueAnimator.ofInt(start,end);
+    private void doAnimation(int during, int start, int end) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
+            ValueAnimator animator = ValueAnimator.ofInt(start, end);
             animator.setDuration(during);
             animator.setInterpolator(new AccelerateDecelerateInterpolator());
             animator.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
@@ -205,6 +221,7 @@ public class SpringView extends FrameLayout {
             animator.start();
         }
     }
+
     @Override
     protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
         int sizeWidth = MeasureSpec.getSize(widthMeasureSpec);
@@ -221,25 +238,26 @@ public class SpringView extends FrameLayout {
 
 
         mMoveTop = t;
-        mMoveBottom = b - mMoveHolderH - 200;
+        mMoveBottom = b - mMoveHolderH - mFloatHeight;
         if (isFirstLayout) {
             mFLP.setMargins(0, mMoveBottom, 0, 0);
             isFirstLayout = false;
         }
-        if(mFLP.topMargin == mMoveTop){
-            mIsTouchTop = true ;
+        if (mFLP.topMargin == mMoveTop) {
+            mIsTouchTop = true;
             mHandler.sendEmptyMessage(PULL_UP_TOUCH_TOP);
         }
-        if(mFLP.topMargin == mMoveBottom){
-            mIsTouchTop = false ;
+        if (mFLP.topMargin == mMoveBottom) {
+            mIsTouchTop = false;
             mHandler.sendEmptyMessage(PULL_UP_TOUCH_BOTTOM);
         }
 
         mSpringViewHolder.layout(l, t + mFLP.topMargin, r, b);
     }
 
-    public interface OnSpringListener{
+    public interface OnSpringListener {
         void touchTop();
+
         void touchBottom();
     }
 }
