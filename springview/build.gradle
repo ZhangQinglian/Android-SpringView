@@ -23,7 +23,7 @@ dependencies {
 }
 apply plugin: 'com.github.dcendents.android-maven'
 apply plugin: 'com.jfrog.bintray'
-version = "1.0"
+version = "1.1"
 
 def siteUrl = 'https://github.com/ZhangQinglian/Android-SpringView'        // project homepage
 def gitUrl = 'https://github.com/ZhangQinglian/Android-SpringView.git'     // project git
@@ -36,7 +36,7 @@ install {
         pom {
             project {
                 packaging 'aar'
-                name 'Luffy For Android'
+                name 'SpringView For Android'
                 url siteUrl
                 licenses {
                     license {

@@ -1,8 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <attr name="floatHeight" format="integer" />
 
-    <declare-styleable name="SpringView">
-        <attr name="floatHeight" />
+    <attr name="topMargin" format="dimension" />
+    <attr name="bottomMargin" format="dimension" />
+
+    <declare-styleable name="PullUpView">
+        <attr name="topMargin" />
+        <attr name="bottomMargin"/>
     </declare-styleable>
+
 </resources>

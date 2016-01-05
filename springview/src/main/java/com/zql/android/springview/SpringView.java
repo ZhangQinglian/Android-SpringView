@@ -3,6 +3,7 @@ package com.zql.android.springview;
 import android.animation.ValueAnimator;
 import android.annotation.TargetApi;
 import android.content.Context;
+import android.content.res.TypedArray;
 import android.graphics.Color;
 import android.os.Build;
 import android.os.Message;
@@ -36,11 +37,14 @@ public class SpringView extends FrameLayout {
     /**
      * mMoveHolder的漂浮高度，默认0
      */
-    private int mFloatHeight = 0;
     /**
-     * mSpringViewHolder的最小上外边距
+     * 上拉视图的上外边距
      */
-    private int mMoveTop;
+    private int mTopMargin = 0;
+    /**
+     * 上拉视图的下外边距
+     */
+    private int mBottomMargin = 0;
     /**
      * mSpringViewHolder的最大上外边距
      */
@@ -99,17 +103,21 @@ public class SpringView extends FrameLayout {
     public SpringView(Context context, AttributeSet attrs) {
         super(context, attrs);
         mContext = context;
-    }
-
-    public void setFloatHeight(int height) {
-        if (height < 0) return;
-        this.mFloatHeight = height;
+        TypedArray array = context.obtainStyledAttributes(attrs, R.styleable.PullUpView);
+        float top = array.getDimension(R.styleable.PullUpView_topMargin, 0);
+        float bottom = array.getDimension(R.styleable.PullUpView_bottomMargin, 0);
+        if (top > 0) {
+            mTopMargin = (int) top;
+        }
+        if (bottom >= 0) {
+            mBottomMargin = (int) bottom;
+        }
     }
 
     /**
      * 设置
      *
-     * @param listener
+     * @param listener SpringView的触顶和触底回调
      */
     public void setOnSpringListener(OnSpringListener listener) {
         this.mCallback = listener;
@@ -170,8 +178,8 @@ public class SpringView extends FrameLayout {
                         originY = event.getRawY();
                         if (Math.abs(deltaY) > 0.0f) {
                             int top = (int) (mFLP.topMargin + deltaY + 0.5f);
-                            if (top < mMoveTop) {
-                                top = mMoveTop;
+                            if (top < mTopMargin) {
+                                top = mTopMargin;
                             }
                             if (top > mMoveBottom) {
                                 top = mMoveBottom;
@@ -185,8 +193,8 @@ public class SpringView extends FrameLayout {
                         if (top == 0 || top == mMoveBottom) {
                             return true;
                         }
-                        if (top < (mMoveTop + mMoveBottom) / 2) {
-                            doAnimation(250, top, 0);
+                        if (top < (mTopMargin + mMoveBottom) / 2) {
+                            doAnimation(250, top, mTopMargin);
                         } else {
                             doAnimation(250, top, mMoveBottom);
                         }
@@ -198,11 +206,11 @@ public class SpringView extends FrameLayout {
     }
 
     public void jumpUp() {
-        doAnimation(250, mMoveBottom, mMoveTop);
+        doAnimation(250, mMoveBottom, mTopMargin);
     }
 
     public void jumpDown() {
-        doAnimation(250, mMoveTop, mMoveBottom);
+        doAnimation(250, mTopMargin, mMoveBottom);
     }
 
     @TargetApi(Build.VERSION_CODES.HONEYCOMB)
@@ -236,14 +244,12 @@ public class SpringView extends FrameLayout {
         View mainContent = getChildAt(0);
         mainContent.layout(l, t, r, b);
 
-
-        mMoveTop = t;
-        mMoveBottom = b - mMoveHolderH - mFloatHeight;
+        mMoveBottom = b - mMoveHolderH - mBottomMargin;
         if (isFirstLayout) {
             mFLP.setMargins(0, mMoveBottom, 0, 0);
             isFirstLayout = false;
         }
-        if (mFLP.topMargin == mMoveTop) {
+        if (mFLP.topMargin == mTopMargin) {
             mIsTouchTop = true;
             mHandler.sendEmptyMessage(PULL_UP_TOUCH_TOP);
         }
